@@ -84,3 +84,33 @@ export const PATCH = async (path, id, data, token) => {
     return error.response.data;
   }
 };
+
+export const PUT = async (path, id, data) => {
+  // console.log(path)
+  // console.log(id)
+  // console.log(data)
+  // console.log(token)
+  // console.log('route', `${process.env.NEXT_PUBLIC_API_BASE_URL}${path}/${id}`)
+  const header = {
+    'Content-Type': 'application/json',
+    // Authorization: `Bearer ${token || null}`,
+  };
+
+  try {
+    const response = await axios.put(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${path}/${id}`,
+      data,
+      {
+        headers: header,
+      }
+    );
+    // console.log(response)
+    // console.log(response.data)
+    
+    return response.data;
+  } catch (error) {
+    console.log(error)
+    // return error;
+    return error.response.data;
+  }
+};

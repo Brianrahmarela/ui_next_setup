@@ -1,69 +1,79 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel,
 getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "./pagination";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDebouncedCallback } from "use-debounce";
 import { Toaster } from "@/components/ui/sonner"
 import {DropdownMenu,DropdownMenuCheckboxItem,DropdownMenuContent,DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
+import { API } from "@/config";
+import { customRevalidatePath } from "@/lib/action";
+import { toast } from "sonner";
 
 export function DataTable({
-	isPerluValidasi, columns, data, totalData, totalContent, limit, token,
+	 columns, data, totalData, totalContent, limit, 
 }) {
-	
 	console.log(data)
 	const [sorting, setSorting] = useState([]);
 	const [columnFilters, setColumnFilters] = useState([]);
 	const [columnVisibility, setColumnVisibility] = useState({ actions: true });	
 	const [rowSelection, setRowSelection] = useState({});
-	const [dataUpdateRow, setdataUpdateRow] = useState([]);
-	const debouncedName = useDebouncedCallback(async (val, id) => {
-		const params = {
-			name : val
-		};
-		
-		const existingDataIndex = dataUpdateRow.findIndex(item => item.id === id);
-		if (existingDataIndex !== -1) {
-			setdataUpdateRow(prevData => {
-				const newData = [...prevData];
-				newData[existingDataIndex].name = params.name;
-				return newData;
-			});
-		} else {
-			setdataUpdateRow(prevData => [...prevData, { id, ...params }]);
-		}
-		
-	}, 1000);
-
-	const [editingRowId, setEditingRowId] = useState(null);
-	
 	const [tableData, setTableData] = useState(data);
 	console.log(tableData)
-  
+	const [editingRowId, setEditingRowId] = useState(null);
+	const [originalData, setOriginalData] = useState(null);
+	console.log(originalData)
+	
+	const handleUpdateRow = async (idRow, params) => {
+		const { id, name, email, birth_date } = params;
+		const filteredParams = { id, name, email, birth_date };
+		const response = await API.PUT('/users/', idRow, filteredParams);
+		console.log(response)
+		if (response.message==='User updated successfully') {
+			await customRevalidatePath('/home');
+			toast.success("Saved successfully", {position: 'top-right'});
+		} else {
+			toast.error(`Error! ${response.errors[0].detail}`, {position: 'top-right'});
+		}
+		return response.data;
+	}
+
 	const handleSaveRow = (updatedRow) => {
-		console.log('updatedRow', updatedRow)
+	console.log(updatedRow)
 	  setTableData((prevData) =>
 		prevData.map((row) => (row.id === updatedRow.id ? updatedRow : row))
 	  );
+	  console.log('tableData before hit update api', tableData)
+	  handleUpdateRow(updatedRow.id, updatedRow)
 	  setEditingRowId(null);
+	  setOriginalData(null);
 	};
   
-	const handleCancelEdit = () => {
+	const handleCancelEdit = (canceledRow) => {
+	console.log(canceledRow)
+	  setTableData((prevData) =>
+		prevData.map((row) =>
+		  row.id === canceledRow.id ? originalData : row
+		)
+	  );
 	  setEditingRowId(null);
+	  setOriginalData(null);
+	};
+  
+	const handleEditRow = (row) => {
+	  setOriginalData({ ...row }); // Simpan salinan data asli
+	  setEditingRowId(row.id);
 	};
 
 	const table = useReactTable({
-		// data,
-		// columns: columns({
-		// 	isPerluValidasi, token, debouncedName
-		// }),
 		data: tableData,
-		columns: columns({ editingRowId, setEditingRowId, handleSaveRow, handleCancelEdit }),
+		columns: columns({ editingRowId,
+        setEditingRowId: handleEditRow,
+        handleSaveRow,
+        handleCancelEdit,}),
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		onSortingChange: setSorting,
@@ -86,22 +96,6 @@ export function DataTable({
 				<TableCell><Skeleton className="h-5 w-[150px] bg-gray-200" /></TableCell>
 				<TableCell><Skeleton className="h-5 w-[150px] bg-gray-200" /></TableCell>
 				<TableCell><Skeleton className="h-5 w-[90px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[90px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[150px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[100px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[200px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[200px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[70px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[100px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[100px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[180px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[140px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[140px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[120px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[100px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[150px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[100px] bg-gray-200" /></TableCell>
-				<TableCell><Skeleton className="h-5 w-[150px] bg-gray-200" /></TableCell>
 			</TableRow>
 		));
 
@@ -186,8 +180,11 @@ export function DataTable({
 										No results.
 									</TableCell>
 								</TableRow>
-							) : table.getRowModel().rows?.length ? (
-								table.getRowModel().rows.map((row) => (
+							) : 
+							!tableData ? (
+								<>{skeletonTableRow}</>
+							) : (
+								table?.getRowModel().rows?.map((row) => (
 									<TableRow
 										key={row.id}
 										data-state={row.getIsSelected() && "selected"}
@@ -202,8 +199,6 @@ export function DataTable({
 										))}
 									</TableRow>
 								))
-							) : (
-								<>{skeletonTableRow}</>
 								)}
 						</TableBody>
 					</Table>
