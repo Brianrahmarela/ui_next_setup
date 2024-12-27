@@ -43,13 +43,15 @@ export const POST = async (path, data, token) => {
   };
 
   try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}${path}`,
-      data,
-      {
-        headers: header,
-      }
-    );
+    const baseUrl =
+    path === '/auth/login'
+      ? process.env.NEXT_PUBLIC_API_BASE_URL_LOGIN
+      : process.env.NEXT_PUBLIC_API_BASE_URL;
+
+    const response = await axios.post(`${baseUrl}${path}`, data, {
+      headers: header,
+    });
+
     console.log('response API POST: ', response)
 
     return response.data;

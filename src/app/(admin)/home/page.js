@@ -16,7 +16,7 @@ import Link from "next/link";
 
 const getData = async (token, params) => {
 	console.log(token)
-	const response = await API.GET("/student", token, params);
+	const response = await API.GET("/users", token, params);
 	console.log(response)
 	return response;
 };
@@ -139,18 +139,11 @@ const dashboard = async ({ searchParams }) => {
 							// isPerluValidasi={searchParams.validasi === 'perlu_validasi' ? true : false}
 							columns={columns}
 							data={data}
-							// totalData={data?.total_data}
-							// totalContent={data?.limit_data}
-							// limit={data?.limit_data}
-							// token={token}
-							// kategoriOpt={dataComponents.review_dashboard_categories}
-							// subKategoriOpt={dataComponents.review_dashboard_sub_categories}
-							// solusiOpt={dataComponents.review_solutions}
-							// responsibleDeptOpt={dataComponents.review_responsible_departments}
-							// sumberOpt={dataComponents.sources}
-							// storeOpt={dataStores.data}
-							// brandOpt={dataBrands.data}
-							// channelOpt={dataChannels.data}
+							totalData={data.length}
+							totalContent={10}
+							limit={10}
+							token={token}
+		
 						/>
 					</div>
 			</div>
