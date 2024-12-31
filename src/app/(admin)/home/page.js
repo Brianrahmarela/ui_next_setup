@@ -8,6 +8,7 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { formatAngka } from "@/lib/helper";
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
 
 // const getProfile = async (token) => {
 // 	const response = await API.GET("/me", token);
@@ -114,6 +115,7 @@ const dashboard = async ({ searchParams }) => {
 
 	return (
 		<div className="flex flex-col ">
+				
 				<div className="flex-1 ">
 					Home page
 					{/* <div className="grid grid-cols-12 items-center space-y-2 mb-2">
