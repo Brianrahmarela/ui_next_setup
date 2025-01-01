@@ -1,7 +1,7 @@
 import React from "react";
 import { API } from "@/config";
 import { cookies } from "next/headers";
-import FormCreatehome from "@/components/home/create-home/form-create-home";
+import FormCreatehome from "@/components/home/create-complaint/form-create-complaint";
 import { Button } from "@/components/ui/button";
 import { MoveLeft } from "lucide-react";
 import Link from "next/link";
