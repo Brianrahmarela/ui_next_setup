@@ -67,13 +67,25 @@ export function DataTable({
 	  setOriginalData({ ...row }); // Simpan salinan data asli
 	  setEditingRowId(row.id);
 	};
+	const handleDeleteRow = async (row) => {
+	  console.log(row)
+		// const response = await API.PUT('/users/', idRow, filteredParams);
+		// console.log(response)
+		// if (response.message==='User updated successfully') {
+		// 	await customRevalidatePath('/home');
+		// 	toast.success("Saved successfully", {position: 'top-right'});
+		// } else {
+		// 	toast.error(`Error! ${response.errors[0].detail}`, {position: 'top-right'});
+		// }
+		// return response.data;
+	};
 
 	const table = useReactTable({
 		data: tableData,
 		columns: columns({ editingRowId,
         setEditingRowId: handleEditRow,
         handleSaveRow,
-        handleCancelEdit,}),
+        handleCancelEdit, handleDeleteRow}),
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		onSortingChange: setSorting,

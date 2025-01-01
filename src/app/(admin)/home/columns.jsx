@@ -16,7 +16,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
-export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCancelEdit }) => [
+export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCancelEdit, handleDeleteRow }) => [
   {
     accessorKey: "id",
     header: "ID",
@@ -94,7 +94,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
               <DropdownMenuContent align="end">
               </DropdownMenuContent>
             </DropdownMenu> 
-          <Card className="absolute left-[-95px] top-9 bg-white z-50 rounded-md m-0 p-0 ">
+          <Card className="absolute left-[-95px] top-9 bg-white z-50 rounded-md m-0 p-0 shadow-md">
             <div className="p-1 m-0">
               <Button variant="primary" className="w-full text-left hover:bg-[#fafafa] m-0 p-0 w-[115px]" onClick={() => handleSaveRow(row.original)}>
               <div className="flex justify-start w-full font-normal ml-2 ">Save</div> 
@@ -117,7 +117,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="start">
               <DropdownMenuItem
                 onClick={() => {}}
               >
@@ -130,6 +130,14 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
                   onClick={() => setEditingRowId(row.original)}
                 >
                 Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator/>
+                <DropdownMenuItem
+                  disabled={!!editingRowId} // Disable jika sedang mengedit baris lain
+                  variant="ghost"
+                  onClick={() => handleDeleteRow(row.original)}
+                >
+                Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
