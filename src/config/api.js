@@ -4,6 +4,7 @@ import axios from 'axios';
 
 export const GET = async (path, token, params) => {
   console.log('url API GET: ', path)
+  console.log(params)
 
   const header = {
     'Content-Type': 'application/json',
@@ -86,11 +87,11 @@ export const PATCH = async (path, id, data, token) => {
 };
 
 export const PUT = async (path, id, data) => {
-  // console.log(path)
-  // console.log(id)
-  // console.log(data)
+  console.log(path)
+  console.log(id)
+  console.log(data)
   // console.log(token)
-  // console.log('route', `${process.env.NEXT_PUBLIC_API_BASE_URL}${path}/${id}`)
+  console.log('route', `${process.env.NEXT_PUBLIC_API_BASE_URL}${path}/${id}`)
   const header = {
     'Content-Type': 'application/json',
     // Authorization: `Bearer ${token || null}`,
@@ -104,8 +105,8 @@ export const PUT = async (path, id, data) => {
         headers: header,
       }
     );
-    // console.log(response)
-    // console.log(response.data)
+    console.log(response)
+    console.log(response.data)
     
     return response.data;
   } catch (error) {

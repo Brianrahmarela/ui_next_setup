@@ -7,6 +7,8 @@ import { formatAngka } from "@/lib/helper";
 import { Input } from "@/components/ui/input";
 
 export function DataTablePagination({ table, totalData }) {
+	console.log(table)
+	console.log(totalData)
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const { replace } = useRouter();
@@ -15,6 +17,7 @@ export function DataTablePagination({ table, totalData }) {
 
 	const [pageQuery, setPageQuery] = useState(params?.get("page"));
 	const [pageState, setPageState] = useState(1);
+	console.log(pageState)
 
 	const createPageURL = (name, pageNumber) => {
 		const params = new URLSearchParams(searchParams.toString());

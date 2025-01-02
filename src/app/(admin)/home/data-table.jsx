@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel,
 getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,78 +14,83 @@ import { customRevalidatePath } from "@/lib/action";
 import { toast } from "sonner";
 
 export function DataTable({
-	 columns, data, totalData, totalContent, limit, 
+	 columns, initialData, totalData, totalContent, limit, 
 }) {
-	console.log(data)
+	console.log('initialData =>', initialData)
+	console.log(totalData)
+	console.log(totalContent)
 	const [sorting, setSorting] = useState([]);
 	const [columnFilters, setColumnFilters] = useState([]);
 	const [columnVisibility, setColumnVisibility] = useState({ actions: true });	
 	const [rowSelection, setRowSelection] = useState({});
-	const [tableData, setTableData] = useState(data);
+
+	const [tableData, setTableData] = useState(initialData);
 	console.log(tableData)
 	const [editingRowId, setEditingRowId] = useState(null);
 	const [originalData, setOriginalData] = useState(null);
-	console.log(originalData)
-	
-	const handleUpdateRow = async (idRow, params) => {
-		const { id, name, email, birth_date } = params;
-		const filteredParams = { id, name, email, birth_date };
-		const response = await API.PUT('/users/', idRow, filteredParams);
-		console.log(response)
-		if (response.message==='User updated successfully') {
-			await customRevalidatePath('/home');
-			toast.success("Saved successfully", {position: 'top-right'});
-		} else {
-			toast.error(`Error! ${response.errors[0].detail}`, {position: 'top-right'});
-		}
-		return response.data;
-	}
 
-	const handleSaveRow = (updatedRow) => {
-	console.log(updatedRow)
-	  setTableData((prevData) =>
-		prevData.map((row) => (row.id === updatedRow.id ? updatedRow : row))
-	  );
-	  console.log('tableData before hit update api', tableData)
-	  handleUpdateRow(updatedRow.id, updatedRow)
-	  setEditingRowId(null);
-	  setOriginalData(null);
-	};
+	useEffect(() => {
+		setTableData(initialData);
+	  }, [initialData]);
+
+	const handleUpdateRow = async (updatedRow) => {
+		const {id,name,email,birth_date} = updatedRow;
+		const filteredParams = {id,name,email,birth_date}
+
+		try {
+		  const response = await API.PUT(`/users`, id, filteredParams);
+		  console.log(response)
+		  if (response.meta.message === "User updated successfully") {
+			await customRevalidatePath('/home');
+			toast.success("Row updated successfully.");
+		  } else {
+			throw new Error(response.errors[0]?.detail || "Unknown error.");
+		  }
+		} catch (error) {
+		  toast.error(`Failed to update row: ${error.message}`);
+		}
+	  };
+
+	  const handleSaveRow = (updatedRow) => {
+		setTableData((prevData) =>
+		  prevData.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+		);
+		handleUpdateRow(updatedRow);
+		setEditingRowId(null);
+		setOriginalData(null);
+	  };
   
-	const handleCancelEdit = (canceledRow) => {
-	console.log(canceledRow)
-	  setTableData((prevData) =>
-		prevData.map((row) =>
-		  row.id === canceledRow.id ? originalData : row
-		)
-	  );
-	  setEditingRowId(null);
-	  setOriginalData(null);
-	};
+	  const handleCancelEdit = () => {
+		setTableData((prevData) =>
+		  prevData.map((row) => (row.id === editingRowId ? originalData : row))
+		);
+		setEditingRowId(null);
+		setOriginalData(null);
+	  };
   
 	const handleEditRow = (row) => {
 	  setOriginalData({ ...row }); // Simpan salinan data asli
 	  setEditingRowId(row.id);
 	};
-	const handleDeleteRow = async (delRow) => {
-		console.log(delRow)
-		setTableData((prevTableData) => 
-			prevTableData.filter((row) => row.id !== delRow.id)
-		);
-		
-		setEditingRowId(null);
-		setOriginalData(null);
+	
+	const handleDeleteRow = async (rowId) => {
+		const originalData = [...tableData];
+		setTableData((prev) => prev.filter((row) => row.id !== rowId.id));
+	
+		try {
+		  const response = await API.DELETE('/users/', rowId.id);
 
-		const response = await API.DELETE('/users/', delRow.id);
-		console.log(response)
-		if (response.message==='User deleted successfully') {
+		  if (response.meta.message === "User deleted successfully") {
 			await customRevalidatePath('/home');
-			toast.success("Saved successfully", {position: 'top-right'});
-		} else {
-			toast.error(`Error! ${response.errors}`, {position: 'top-right'});
+			toast.success("Deleted successfully");
+		  } else {
+			throw new Error(response.errors[0]?.detail || "Unknown error");
+		  }
+		} catch (error) {
+		  setTableData(originalData); // Rollback on failure
+		  toast.error(`Error deleting row: ${error.message}`);
 		}
-		return response.data;
-	};
+	  };
 
 	const table = useReactTable({
 		data: tableData,
@@ -102,7 +107,8 @@ export function DataTable({
 		onColumnVisibilityChange: setColumnVisibility,
 		onRowSelectionChange: setRowSelection,
 		state: { sorting, columnFilters, columnVisibility, rowSelection },
-		pageCount: Math.ceil(totalData / limit)
+		pageCount: useMemo(() => Math.ceil(totalData / limit), [totalData, limit])
+		// pageCount: Math.ceil(totalData / limit)
 	});
 
 	const skeletonTableRow = new Array(totalContent)
@@ -115,9 +121,11 @@ export function DataTable({
 				<TableCell><Skeleton className="h-5 w-[150px] bg-gray-200" /></TableCell>
 				<TableCell><Skeleton className="h-5 w-[150px] bg-gray-200" /></TableCell>
 				<TableCell><Skeleton className="h-5 w-[90px] bg-gray-200" /></TableCell>
+			
 			</TableRow>
 		));
 
+	
 	return (
 		<>	
 			<div className="pb-7 pt-3 grid grid-cols-12 md:gap-y-0 gap-y-4">
@@ -190,7 +198,7 @@ export function DataTable({
 							))}
 						</TableHeader>
 						<TableBody>
-							{data === null || !totalData ? (
+							{initialData === null || !totalData ? (
 								<TableRow>
 									<TableCell
 										colSpan={columns.length}
@@ -199,11 +207,8 @@ export function DataTable({
 										No results.
 									</TableCell>
 								</TableRow>
-							) : 
-							!tableData ? (
-								<>{skeletonTableRow}</>
-							) : (
-								table?.getRowModel().rows?.map((row) => (
+							)  : table.getRowModel().rows?.length ? (
+								table.getRowModel().rows.map((row) => (
 									<TableRow
 										key={row.id}
 										data-state={row.getIsSelected() && "selected"}
@@ -218,7 +223,9 @@ export function DataTable({
 										))}
 									</TableRow>
 								))
-								)}
+							) : (
+								<>{skeletonTableRow}</>
+							) }
 						</TableBody>
 					</Table>
 				</div>

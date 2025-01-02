@@ -26,6 +26,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => {
+      console.log(row.original)
       const isEditing = editingRowId === row.original.id;
       return isEditing ? (
         <Input
