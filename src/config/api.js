@@ -114,3 +114,26 @@ export const PUT = async (path, id, data) => {
     return error.response.data;
   }
 };
+
+export const DELETE = async (path, id, token) => {
+  console.log(path)
+  console.log(id)
+  console.log(token)
+  const header = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token || null}`,
+  };
+
+  try {
+    const response = await axios.delete(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}${path}/${id}`,
+      {
+        headers: header,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+};

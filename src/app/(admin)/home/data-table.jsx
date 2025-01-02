@@ -67,17 +67,24 @@ export function DataTable({
 	  setOriginalData({ ...row }); // Simpan salinan data asli
 	  setEditingRowId(row.id);
 	};
-	const handleDeleteRow = async (row) => {
-	  console.log(row)
-		// const response = await API.PUT('/users/', idRow, filteredParams);
-		// console.log(response)
-		// if (response.message==='User updated successfully') {
-		// 	await customRevalidatePath('/home');
-		// 	toast.success("Saved successfully", {position: 'top-right'});
-		// } else {
-		// 	toast.error(`Error! ${response.errors[0].detail}`, {position: 'top-right'});
-		// }
-		// return response.data;
+	const handleDeleteRow = async (delRow) => {
+		console.log(delRow)
+		setTableData((prevTableData) => 
+			prevTableData.filter((row) => row.id !== delRow.id)
+		);
+		
+		setEditingRowId(null);
+		setOriginalData(null);
+
+		const response = await API.DELETE('/users/', delRow.id);
+		console.log(response)
+		if (response.message==='User deleted successfully') {
+			await customRevalidatePath('/home');
+			toast.success("Saved successfully", {position: 'top-right'});
+		} else {
+			toast.error(`Error! ${response.errors}`, {position: 'top-right'});
+		}
+		return response.data;
 	};
 
 	const table = useReactTable({
