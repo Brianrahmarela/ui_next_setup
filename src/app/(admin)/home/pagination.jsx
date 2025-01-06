@@ -6,9 +6,7 @@ import { usePathname, useSearchParams, useRouter} from "next/navigation";
 import { formatAngka } from "@/lib/helper";
 import { Input } from "@/components/ui/input";
 
-export function DataTablePagination({ table, totalData }) {
-	console.log(table)
-	console.log(totalData)
+export function DataTablePagination({ table, totalData, editingRowId }) {
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const { replace } = useRouter();
@@ -17,7 +15,6 @@ export function DataTablePagination({ table, totalData }) {
 
 	const [pageQuery, setPageQuery] = useState(params?.get("page"));
 	const [pageState, setPageState] = useState(1);
-	console.log(pageState)
 
 	const createPageURL = (name, pageNumber) => {
 		const params = new URLSearchParams(searchParams.toString());
@@ -88,7 +85,7 @@ export function DataTablePagination({ table, totalData }) {
 								setPageState(Number(pageState - 1))
 								table.previousPage();
 							}}
-							disabled={Number(pageQuery) === 1}
+							disabled={Number(pageQuery) === 1 || editingRowId}
 						>
 							<span className="sr-only">Go to previous page</span>
 							<ChevronLeftIcon className="h-4 w-4" />
@@ -100,7 +97,7 @@ export function DataTablePagination({ table, totalData }) {
 								setPageState(Number(pageState + 1))
 								table.nextPage();
 							}}
-							disabled={Number(pageQuery) === table.getPageCount()}
+							disabled={Number(pageQuery) === table.getPageCount() || editingRowId}
 						>
 							<span className="sr-only">Go to next page</span>
 							<ChevronRightIcon className="h-4 w-4" />

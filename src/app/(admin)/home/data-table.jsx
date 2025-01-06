@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel,
 getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -12,20 +12,22 @@ import {DropdownMenu,DropdownMenuCheckboxItem,DropdownMenuContent,DropdownMenuTr
 import { API } from "@/config";
 import { customRevalidatePath } from "@/lib/action";
 import { toast } from "sonner";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
 export function DataTable({
 	 columns, initialData, totalData, totalContent, limit, 
 }) {
-	console.log('initialData =>', initialData)
-	console.log(totalData)
-	console.log(totalContent)
+	// console.log('initialData =>', initialData)
+	// console.log(totalData)
+	// console.log(totalContent)
 	const [sorting, setSorting] = useState([]);
 	const [columnFilters, setColumnFilters] = useState([]);
 	const [columnVisibility, setColumnVisibility] = useState({ actions: true });	
 	const [rowSelection, setRowSelection] = useState({});
 
 	const [tableData, setTableData] = useState(initialData);
-	console.log(tableData)
+	// console.log(tableData)
 	const [editingRowId, setEditingRowId] = useState(null);
 	const [originalData, setOriginalData] = useState(null);
 
@@ -33,64 +35,69 @@ export function DataTable({
 		setTableData(initialData);
 	  }, [initialData]);
 
-	const handleUpdateRow = async (updatedRow) => {
-		const {id,name,email,birth_date} = updatedRow;
-		const filteredParams = {id,name,email,birth_date}
-
+	  const handleUpdateRow = useCallback(async (updatedRow) => {
+		const { id, name, email, birth_date } = updatedRow;
+		const filteredParams = { id, name, email, birth_date };
+	
 		try {
 		  const response = await API.PUT(`/users`, id, filteredParams);
-		  console.log(response)
-		  if (response.meta.message === "User updated successfully") {
-			await customRevalidatePath('/home');
+		  if (response.meta?.message === "User updated successfully") {
+			await customRevalidatePath("/home");
 			toast.success("Row updated successfully.");
 		  } else {
-			throw new Error(response.errors[0]?.detail || "Unknown error.");
+			throw new Error(response.errors?.[0]?.detail || "Unknown error.");
 		  }
 		} catch (error) {
 		  toast.error(`Failed to update row: ${error.message}`);
 		}
-	  };
+	  }, []);
 
-	  const handleSaveRow = (updatedRow) => {
-		setTableData((prevData) =>
-		  prevData.map((row) => (row.id === updatedRow.id ? updatedRow : row))
-		);
-		handleUpdateRow(updatedRow);
-		setEditingRowId(null);
-		setOriginalData(null);
-	  };
-  
-	  const handleCancelEdit = () => {
+	  const handleSaveRow = useCallback(
+		(updatedRow) => {
+		  setTableData((prevData) =>
+			prevData.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+		  );
+		  handleUpdateRow(updatedRow);
+		  setEditingRowId(null);
+		  setOriginalData(null);
+		},
+		[handleUpdateRow]
+	  );
+	
+	  const handleCancelEdit = useCallback(() => {
 		setTableData((prevData) =>
 		  prevData.map((row) => (row.id === editingRowId ? originalData : row))
 		);
 		setEditingRowId(null);
 		setOriginalData(null);
-	  };
-  
-	const handleEditRow = (row) => {
-	  setOriginalData({ ...row }); // Simpan salinan data asli
-	  setEditingRowId(row.id);
-	};
+	  }, [editingRowId, originalData]);
 	
-	const handleDeleteRow = async (rowId) => {
-		const originalData = [...tableData];
-		setTableData((prev) => prev.filter((row) => row.id !== rowId.id));
+	  const handleEditRow = useCallback((row) => {
+		setOriginalData({ ...row });
+		setEditingRowId(row.id);
+	  }, []);
 	
-		try {
-		  const response = await API.DELETE('/users/', rowId.id);
-
-		  if (response.meta.message === "User deleted successfully") {
-			await customRevalidatePath('/home');
-			toast.success("Deleted successfully");
-		  } else {
-			throw new Error(response.errors[0]?.detail || "Unknown error");
+	  const handleDeleteRow = useCallback(
+		async (rowId) => {
+		  const originalData = [...tableData];
+		  setTableData((prev) => prev.filter((row) => row.id !== rowId.id));
+	
+		  try {
+			const response = await API.DELETE("/users/", rowId.id);
+			if (response.meta?.message === "User deleted successfully") {
+			  await customRevalidatePath("/home");
+			  toast.success("Deleted successfully");
+			} else {
+			  throw new Error(response.errors?.[0]?.detail || "Unknown error");
+			}
+		  } catch (error) {
+			setTableData(originalData);
+			toast.error(`Error deleting row: ${error.message}`);
 		  }
-		} catch (error) {
-		  setTableData(originalData); // Rollback on failure
-		  toast.error(`Error deleting row: ${error.message}`);
-		}
-	  };
+		},
+		[tableData]
+	  );
+	
 
 	const table = useReactTable({
 		data: tableData,
@@ -121,26 +128,18 @@ export function DataTable({
 				<TableCell><Skeleton className="h-5 w-[150px] bg-gray-200" /></TableCell>
 				<TableCell><Skeleton className="h-5 w-[150px] bg-gray-200" /></TableCell>
 				<TableCell><Skeleton className="h-5 w-[90px] bg-gray-200" /></TableCell>
-			
 			</TableRow>
 		));
-
 	
 	return (
 		<>	
 			<div className="pb-7 pt-3 grid grid-cols-12 md:gap-y-0 gap-y-4">
-				<div className="md:col-span-8 col-span-12 gap-5 flex">
-					<Button
-						onClick={() => {}}
-						variant="outline"
-						className="border-none"
-					>
-					</Button>
-					<Button
-						variant="outline"
-						onClick={() => {}}
-						className="border-none"
-					>
+				<div className="md:col-span-8 col-span-12 gap-5 ">
+					<Button asChild className="shadow-lg shadow-primary/50 ">
+						<Link asChild href="/home/add-user">
+							<Plus className="h-5 w-5 mr-1 " /> 
+							<span className="mr-2">Add New User</span>
+						</Link>
 					</Button>
 				</div>
 				<div className="md:col-span-4 col-span-12 flex md:justify-end justify-start">
@@ -231,7 +230,7 @@ export function DataTable({
 				</div>
 			</div>
 			<div className="mt-5">
-				<DataTablePagination table={table} totalData={totalData} />
+				<DataTablePagination table={table} totalData={totalData} editingRowId={editingRowId}/>
 			</div>
 			<Toaster 
 			 toastOptions={{

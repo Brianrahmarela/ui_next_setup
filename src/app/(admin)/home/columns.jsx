@@ -5,15 +5,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator} from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator";
 
 export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCancelEdit, handleDeleteRow }) => [
@@ -26,7 +18,6 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => {
-      console.log(row.original)
       const isEditing = editingRowId === row.original.id;
       return isEditing ? (
         <Input
@@ -35,7 +26,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
           placeholder="Edit Name..."
         />
       ) : (
-        <div className="w-[200px]">{row.original.name}</div>
+        <div className="w-full">{row.original.name}</div>
       );
     },
   },
@@ -47,19 +38,30 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
       return isEditing ? (
         <Input
           defaultValue={row.original.email}
-          onChange={(e) => (row.original.email = e.target.value)} // Memodifikasi langsung data baris
+          onChange={(e) => (row.original.email = e.target.value)}
           placeholder="Edit Email..."
         />
       ) : (
-        <div  className="w-[200px]">{row.original.email}</div>
+        <div  className="w-full">{row.original.email}</div>
       );
     },
+  },
+  {
+    accessorKey: "birth_date",
+    header: "Birth Date",
+    cell: ({ row }) => (
+      <div className="w-full">
+        {row.original.birth_date
+          ? format(new Date(row.original.birth_date), "dd MMMM yyyy - HH:mm:ss", { locale: id })
+          : "-"}
+      </div>
+    ),
   },
   {
     accessorKey: "createdAt",
     header: "Created At",
     cell: ({ row }) => (
-      <div className="w-[220px]">
+      <div className="w-full">
         {row.original.createdAt
           ? format(new Date(row.original.createdAt), "dd MMMM yyyy - HH:mm:ss", { locale: id })
           : "-"}
@@ -70,7 +72,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
     accessorKey: "updatedAt",
     header: "Updated At",
     cell: ({ row }) => (
-      <div className="w-[220px]">
+      <div className="w-full">
         {row.original.updatedAt
           ? format(new Date(row.original.updatedAt), "dd MMMM yyyy - HH:mm:ss", { locale: id })
           : "-"}
@@ -84,7 +86,6 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
       const isEditing = editingRowId === row.original.id;
       return isEditing ? (
         <div className="relative">
-
             <DropdownMenu >
               <DropdownMenuTrigger asChild disabled={editingRowId}>
                 <Button variant="ghost" className="h-8 w-8 p-0">
@@ -110,7 +111,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
           </Card>
         </div>
       ) : (
-        <div className="w-[70px]">
+        <div className="w-full">
           <DropdownMenu >
             <DropdownMenuTrigger asChild disabled={editingRowId} >
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -134,7 +135,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
               </DropdownMenuItem>
               <DropdownMenuSeparator/>
                 <DropdownMenuItem
-                  disabled={!!editingRowId} // Disable jika sedang mengedit baris lain
+                  disabled={!!editingRowId}
                   variant="ghost"
                   onClick={() => handleDeleteRow(row.original)}
                 >

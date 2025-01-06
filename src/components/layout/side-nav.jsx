@@ -26,7 +26,7 @@ export function SideNav({ setOpen, className, isMobile }) {
   let dummyMenu = [
     {
       id: 1,
-      title: "home",
+      title: "Home",
       icon: "Icons.home",
       href: "/home",
       hasChildren: false,
