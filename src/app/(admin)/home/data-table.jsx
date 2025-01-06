@@ -115,7 +115,6 @@ export function DataTable({
 		onRowSelectionChange: setRowSelection,
 		state: { sorting, columnFilters, columnVisibility, rowSelection },
 		pageCount: useMemo(() => Math.ceil(totalData / limit), [totalData, limit])
-		// pageCount: Math.ceil(totalData / limit)
 	});
 
 	const skeletonTableRow = new Array(totalContent)

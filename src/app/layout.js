@@ -1,5 +1,11 @@
+import { Poppins } from 'next/font/google'
 import "./globals.css"
 import { cn } from "@/lib/utils"
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
 
 export const metadata = {
   title: 'UI Test',
@@ -9,9 +15,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
+      <body 
         className={cn(
-          "min-h-screen antialiased",
+          "min-h-screen antialiased", poppins.className
         )}
       >
         {children}

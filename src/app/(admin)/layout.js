@@ -1,11 +1,11 @@
-import React, { Suspense } from "react";
+import React from "react";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import { cn } from "@/lib/utils";
-import Loading from "@/components/dashboard/loading";
-import { API } from "@/config";
-import { cookies } from "next/headers";
-import RefreshToken from "@/config/refreshToken";
+// import Loading from "@/components/dashboard/loading";
+// import { API } from "@/config";
+// import { cookies } from "next/headers";
+// import RefreshToken from "@/config/refreshToken";
 
 // const getProfile = async (token) => {
 //   const response = await API.GET('/me', token);

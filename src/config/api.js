@@ -3,14 +3,14 @@
 import axios from 'axios';
 
 export const GET = async (path, token, params) => {
-  console.log('url API GET: ', path)
-  console.log(params)
+  // console.log('url API GET: ', path)
+  // console.log(params)
 
   const header = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token || null}`,
   };
-  console.log('params API GET ==>', params)
+  // console.log('params API GET ==>', params)
   
   try {
     const response = await axios.get(
@@ -20,7 +20,7 @@ export const GET = async (path, token, params) => {
         params,
       }
     );
-    console.log('response API GET: ', response.data)
+    // console.log('response API GET: ', response.data)
 
     return response.data;
   } catch (error) {
@@ -30,13 +30,13 @@ export const GET = async (path, token, params) => {
 
 
 export const POST = async (path, data, token) => {
-  console.log('url API POST: ', path)
+  // console.log('url API POST: ', path)
 
   if (data.remember_me !== undefined) {
     let { remember_me, ...newData } = data;
     data = newData;
   }
-  console.log('params API POST ==>', data)
+  // console.log('params API POST ==>', data)
 
   const header = {
     'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export const POST = async (path, data, token) => {
       headers: header,
     });
 
-    console.log('response API POST: ', response)
+    // console.log('response API POST: ', response)
 
     return response.data;
   } catch (error) {
@@ -62,9 +62,9 @@ export const POST = async (path, data, token) => {
 };
 
 export const PATCH = async (path, id, data, token) => {
-  console.log('url API PATCH: ', path)
+  // console.log('url API PATCH: ', path)
 
-  console.log('params API PATCH ==>', data)
+  // console.log('params API PATCH ==>', data)
   const header = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token || null}`,
@@ -78,7 +78,7 @@ export const PATCH = async (path, id, data, token) => {
         headers: header,
       }
     );
-    console.log('response API PATCH: ', response)
+    // console.log('response API PATCH: ', response)
 
     return response.data;
   } catch (error) {
@@ -87,11 +87,11 @@ export const PATCH = async (path, id, data, token) => {
 };
 
 export const PUT = async (path, id, data) => {
-  console.log(path)
-  console.log(id)
-  console.log(data)
+  // console.log(path)
+  // console.log(id)
+  // console.log(data)
   // console.log(token)
-  console.log('route', `${process.env.NEXT_PUBLIC_API_BASE_URL}${path}/${id}`)
+  // console.log('route', `${process.env.NEXT_PUBLIC_API_BASE_URL}${path}/${id}`)
   const header = {
     'Content-Type': 'application/json',
     // Authorization: `Bearer ${token || null}`,
@@ -105,21 +105,21 @@ export const PUT = async (path, id, data) => {
         headers: header,
       }
     );
-    console.log(response)
-    console.log(response.data)
+    // console.log(response)
+    // console.log(response.data)
     
     return response.data;
   } catch (error) {
-    console.log(error)
+    // console.log(error)
     // return error;
     return error.response.data;
   }
 };
 
 export const DELETE = async (path, id, token) => {
-  console.log(path)
-  console.log(id)
-  console.log(token)
+  // console.log(path)
+  // console.log(id)
+  // console.log(token)
   const header = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token || null}`,

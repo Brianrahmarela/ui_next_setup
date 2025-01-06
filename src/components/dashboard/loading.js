@@ -1,6 +1,5 @@
 
 const Loading = async () => {
-
 	return (
 		<div className="flex flex-col">
 			loading...
