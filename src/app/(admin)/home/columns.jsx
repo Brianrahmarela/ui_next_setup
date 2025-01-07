@@ -84,19 +84,31 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
     header: "Actions",
     cell: ({ row }) => {
       const isEditing = editingRowId === row.original.id;
+      // console.log(isEditing)
       return isEditing ? (
-        <div className="relative">
-            <DropdownMenu >
-              <DropdownMenuTrigger asChild disabled={editingRowId}>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-              </DropdownMenuContent>
-            </DropdownMenu> 
-          <Card className="absolute left-[-95px] top-9 bg-white z-50 rounded-md m-0 p-0 shadow-md">
+        // <div className="relative">
+        <div className="w-full">
+            <DropdownMenu modal={isEditing && true}>
+            <DropdownMenuTrigger asChild >
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={() => handleSaveRow(row.original)}>
+                Save
+              </DropdownMenuItem>
+              <DropdownMenuSeparator/>
+                <DropdownMenuItem
+                  variant="ghost"
+                  onClick={() => handleCancelEdit(row.original)}
+                >
+                Cancel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {/* <Card className="absolute left-[-95px] top-9 bg-white z-50 rounded-md m-0 p-0 shadow-md">
             <div className="p-1 m-0">
               <Button variant="primary" className="w-full text-left hover:bg-[#fafafa] m-0 p-0 w-[115px]" onClick={() => handleSaveRow(row.original)}>
               <div className="flex justify-start w-full font-normal ml-2 ">Save</div> 
@@ -108,7 +120,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
                 <div className="flex justify-start w-full font-normal ml-2 ">Cancel</div> 
               </Button>
             </div>
-          </Card>
+          </Card> */}
         </div>
       ) : (
         <div className="w-full">
@@ -120,11 +132,6 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem
-                onClick={() => {}}
-              >
-                Detail
-              </DropdownMenuItem>
               <DropdownMenuSeparator/>
                 <DropdownMenuItem
                   disabled={!!editingRowId} // Disable jika sedang mengedit baris lain
