@@ -5,9 +5,10 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cf.shopee.co.id',
+        hostname: 'res.cloudinary.com',
         pathname: '**',
       },
+      
     ],
   },
 }
