@@ -1,37 +1,51 @@
-"use client";
-import { useEffect } from "react";
+'use client'
+import { useState, useEffect } from "react";
 
-export default function InstallPrompt() {
+export default function InstallBanner() {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isBannerVisible, setIsBannerVisible] = useState(false);
+
   useEffect(() => {
-    let deferredPrompt;
-
     const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault(); // Mencegah popup default
-      deferredPrompt = e;
-
-      const installButton = document.getElementById("install-btn");
-      if (installButton) installButton.style.display = "block";
-
-      installButton?.addEventListener("click", async () => {
-        deferredPrompt.prompt();
-        const choiceResult = await deferredPrompt.userChoice;
-        console.log(`User choice: ${choiceResult.outcome}`);
-        deferredPrompt = null;
-      });
-    };
-
-    const handleAppInstalled = () => {
-      console.log("PWA installed successfully!");
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsBannerVisible(true); // Tampilkan banner
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
-  return <button id="install-btn" style={{ display: "none" }}>Install App</button>;
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      console.log("Hasil instalasi:", choiceResult.outcome);
+      setIsBannerVisible(false); // Sembunyikan banner
+      setDeferredPrompt(null); // Reset
+    }
+  };
+
+  const closeBanner = () => {
+    setIsBannerVisible(false); // Tutup banner tanpa instalasi
+  };
+
+  return (
+    isBannerVisible && (
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 flex justify-between items-center">
+        <span>Tambahkan aplikasi ke layar utama Anda!</span>
+        <div>
+          <button onClick={handleInstallClick} className="bg-blue-500 px-4 py-2 rounded">
+            Install
+          </button>
+          <button onClick={closeBanner} className="ml-2 text-red-500">
+            Tidak Sekarang
+          </button>
+        </div>
+      </div>
+    )
+  );
 }
