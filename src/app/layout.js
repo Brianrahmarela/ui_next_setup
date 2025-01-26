@@ -1,6 +1,7 @@
 import { Poppins } from 'next/font/google'
 import './globals.css';
 import { cn } from '@/lib/utils';
+import InstallPrompt from "@/components/InstallPrompt";
 
 const APP_NAME = 'UI Test PWA App';
 const APP_DEFAULT_TITLE = 'My Awesome PWA App';
@@ -53,6 +54,7 @@ export default function RootLayout({ children }) {
           "min-h-screen antialiased", poppins.className
         )}
       >
+        <InstallPrompt />
         {children}
       </body>
     </html>
