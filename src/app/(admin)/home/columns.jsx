@@ -5,15 +5,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator} from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator";
 
 export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCancelEdit, handleDeleteRow }) => [
@@ -34,7 +26,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
           placeholder="Edit Name..."
         />
       ) : (
-        <div className="w-[200px]">{row.original.name}</div>
+        <div className="w-full">{row.original.name}</div>
       );
     },
   },
@@ -46,19 +38,30 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
       return isEditing ? (
         <Input
           defaultValue={row.original.email}
-          onChange={(e) => (row.original.email = e.target.value)} // Memodifikasi langsung data baris
+          onChange={(e) => (row.original.email = e.target.value)}
           placeholder="Edit Email..."
         />
       ) : (
-        <div  className="w-[200px]">{row.original.email}</div>
+        <div  className="w-full">{row.original.email}</div>
       );
     },
+  },
+  {
+    accessorKey: "birth_date",
+    header: "Birth Date",
+    cell: ({ row }) => (
+      <div className="w-full">
+        {row.original.birth_date
+          ? format(new Date(row.original.birth_date), "dd MMMM yyyy - HH:mm:ss", { locale: id })
+          : "-"}
+      </div>
+    ),
   },
   {
     accessorKey: "createdAt",
     header: "Created At",
     cell: ({ row }) => (
-      <div className="w-[220px]">
+      <div className="w-full">
         {row.original.createdAt
           ? format(new Date(row.original.createdAt), "dd MMMM yyyy - HH:mm:ss", { locale: id })
           : "-"}
@@ -69,7 +72,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
     accessorKey: "updatedAt",
     header: "Updated At",
     cell: ({ row }) => (
-      <div className="w-[220px]">
+      <div className="w-full">
         {row.original.updatedAt
           ? format(new Date(row.original.updatedAt), "dd MMMM yyyy - HH:mm:ss", { locale: id })
           : "-"}
@@ -81,20 +84,31 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
     header: "Actions",
     cell: ({ row }) => {
       const isEditing = editingRowId === row.original.id;
+      // console.log(isEditing)
       return isEditing ? (
-        <div className="relative">
-
-            <DropdownMenu >
-              <DropdownMenuTrigger asChild disabled={editingRowId}>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-              </DropdownMenuContent>
-            </DropdownMenu> 
-          <Card className="absolute left-[-95px] top-9 bg-white z-50 rounded-md m-0 p-0 shadow-md">
+        // <div className="relative">
+        <div className="w-full">
+            <DropdownMenu modal={isEditing && true}>
+            <DropdownMenuTrigger asChild >
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={() => handleSaveRow(row.original)}>
+                Save
+              </DropdownMenuItem>
+              <DropdownMenuSeparator/>
+                <DropdownMenuItem
+                  variant="ghost"
+                  onClick={() => handleCancelEdit(row.original)}
+                >
+                Cancel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {/* <Card className="absolute left-[-95px] top-9 bg-white z-50 rounded-md m-0 p-0 shadow-md">
             <div className="p-1 m-0">
               <Button variant="primary" className="w-full text-left hover:bg-[#fafafa] m-0 p-0 w-[115px]" onClick={() => handleSaveRow(row.original)}>
               <div className="flex justify-start w-full font-normal ml-2 ">Save</div> 
@@ -106,10 +120,10 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
                 <div className="flex justify-start w-full font-normal ml-2 ">Cancel</div> 
               </Button>
             </div>
-          </Card>
+          </Card> */}
         </div>
       ) : (
-        <div className="w-[70px]">
+        <div className="w-full">
           <DropdownMenu >
             <DropdownMenuTrigger asChild disabled={editingRowId} >
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -118,11 +132,6 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem
-                onClick={() => {}}
-              >
-                Detail
-              </DropdownMenuItem>
               <DropdownMenuSeparator/>
                 <DropdownMenuItem
                   disabled={!!editingRowId} // Disable jika sedang mengedit baris lain
@@ -133,7 +142,7 @@ export const columns = ({ editingRowId, setEditingRowId, handleSaveRow, handleCa
               </DropdownMenuItem>
               <DropdownMenuSeparator/>
                 <DropdownMenuItem
-                  disabled={!!editingRowId} // Disable jika sedang mengedit baris lain
+                  disabled={!!editingRowId}
                   variant="ghost"
                   onClick={() => handleDeleteRow(row.original)}
                 >

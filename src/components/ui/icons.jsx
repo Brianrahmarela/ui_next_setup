@@ -1,4 +1,4 @@
-import { KanbanSquare, CheckCheck, Loader2, StickyNote, BookText } from "lucide-react";
+import { KanbanSquare, CheckCheck, Loader2, StickyNote, BookText, Mail, HardDriveUploadIcon } from "lucide-react";
 
 export const Icons = {
   report: StickyNote,
@@ -6,4 +6,6 @@ export const Icons = {
   dashboard: KanbanSquare,
   spinner: Loader2,
   home: BookText,
+  email: Mail,
+  upload: HardDriveUploadIcon,
 };

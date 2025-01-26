@@ -26,11 +26,29 @@ export function SideNav({ setOpen, className, isMobile }) {
   let dummyMenu = [
     {
       id: 1,
-      title: "home",
+      title: "Home",
       icon: "Icons.home",
       href: "/home",
       hasChildren: false,
-      description: "menu grosir",
+      description: "menu home",
+      children: [],
+    },
+    {
+      id: 2,
+      title: "Email",
+      icon: "Icons.email",
+      href: "/email",
+      hasChildren: false,
+      description: "menu email",
+      children: [],
+    },
+    {
+      id: 3,
+      title: "Upload",
+      icon: "Icons.upload",
+      href: "/upload",
+      hasChildren: false,
+      description: "menu upload",
       children: [],
     },
     // {
@@ -153,7 +171,7 @@ export function SideNav({ setOpen, className, isMobile }) {
             {item.icon && <IconSubMenu subMenu={item} path={path} />}
             <span
               className={cn(
-                `absolute left-12 text-base duration-200 ${path.includes(item.href) && 'group-hover:text-white'}`,
+                `absolute group-hover:text-white left-12 text-base duration-100 ${path.includes(item.href) && 'group-hover:text-white'}`,
                 !isOpen && className
               )}
             >

@@ -2,7 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['cf.shopee.co.id'], // Daftar domain yang diizinkan untuk digunakan dengan komponen <Image> dari Next.js
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '**',
+      },
+      
+    ],
   },
   // webpack: (config) => {
   //   // Custom Webpack config jika perlu
